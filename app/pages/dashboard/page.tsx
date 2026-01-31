@@ -306,29 +306,31 @@ export default function Page() {
 
   const addToRetailTheft = (description: string, clipUrl?: string) => {
     try {
-      const key = "retailTheftLiveIncidents"
-      const existing: unknown[] = JSON.parse(typeof window !== "undefined" ? localStorage.getItem(key) || "[]" : "[]")
-      const id = `live-${Date.now()}`
+      const key = "retailTheftLiveIncidents";
+      const existing: unknown[] = JSON.parse(
+        typeof window !== "undefined" ? localStorage.getItem(key) || "[]" : "[]"
+      );
+      const id = `live-${Date.now()}`;
       const event = {
         id,
         timestamp: new Date().toISOString(),
         cameraId: "your-camera",
         storeId: "store-1",
         zoneId: "live-camera",
-        behaviorType: "concealment",
-        suspicionScore: 75,
-        severity: "high",
+        behaviorType: "stealing",
+        suspicionScore: 90,
+        severity: "critical",
         description,
-        reasoning: "Live AI detection: placing into bag or clothing.",
+        reasoning: "Detected stealing: item placed in bag.",
         keyframes: [],
         ...(clipUrl && { clipUrl }),
         alertSent: true,
         alertChannels: ["voice"],
-      }
-      existing.unshift(event)
-      localStorage.setItem(key, JSON.stringify(existing))
+      };
+      existing.unshift(event);
+      localStorage.setItem(key, JSON.stringify(existing));
     } catch (e) {
-      console.error("Failed to add to Retail Theft:", e)
+      console.error("Failed to add to Retail Theft:", e);
     }
   }
 

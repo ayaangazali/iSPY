@@ -1,5 +1,125 @@
 [
   {
+    "id": "inc-1769901581697-06fjqpa",
+    "snapshotPath": "snapshots/inc-1769901581697-06fjqpa.png",
+    "description": "Person holding a backpack, potentially interacting with its contents.",
+    "cameraId": "your-camera",
+    "timestamp": "00:29",
+    "createdAt": "2026-01-31T23:19:41.703Z"
+  },
+  {
+    "id": "inc-1769901578791-96uxtjs",
+    "snapshotPath": "snapshots/inc-1769901578791-96uxtjs.jpg",
+    "description": "Person handling black backpack with open compartment visible. Another person is nearby, observing. No specific items visible being handled.",
+    "cameraId": "your-camera",
+    "timestamp": "00:26",
+    "createdAt": "2026-01-31T23:19:38.796Z"
+  },
+  {
+    "id": "inc-1769901576755-y6tjj6a",
+    "snapshotPath": "snapshots/inc-1769901576755-y6tjj6a.jpg",
+    "description": "Person holding oranges and placing them into a backpack",
+    "cameraId": "your-camera",
+    "timestamp": "00:24",
+    "createdAt": "2026-01-31T23:19:36.761Z"
+  },
+  {
+    "id": "inc-1769901574436-ajd18q6",
+    "snapshotPath": "snapshots/inc-1769901574436-ajd18q6.jpg",
+    "description": "Person holding a package of oranges and interacting with a backpack, potentially placing items into it.",
+    "cameraId": "your-camera",
+    "timestamp": "00:22",
+    "createdAt": "2026-01-31T23:19:34.441Z"
+  },
+  {
+    "id": "inc-1769901572294-ow26yta",
+    "snapshotPath": "snapshots/inc-1769901572294-ow26yta.png",
+    "description": "Person opening a backpack, potentially preparing to place items inside.",
+    "cameraId": "your-camera",
+    "timestamp": "00:20",
+    "createdAt": "2026-01-31T23:19:32.304Z"
+  },
+  {
+    "id": "inc-1769901568113-0pbhu9h",
+    "snapshotPath": "snapshots/inc-1769901568113-0pbhu9h.jpg",
+    "description": "Person opening a North Face backpack and looking inside",
+    "cameraId": "your-camera",
+    "timestamp": "00:16",
+    "createdAt": "2026-01-31T23:19:28.119Z"
+  },
+  {
+    "id": "inc-1769901463144-c4zoopk",
+    "snapshotPath": "snapshots/inc-1769901463144-c4zoopk.png",
+    "description": "Person holding a package and placing it into a backpack",
+    "cameraId": "your-camera",
+    "timestamp": "00:22",
+    "createdAt": "2026-01-31T23:17:43.211Z"
+  },
+  {
+    "id": "inc-1769901453625-m93sd1w",
+    "snapshotPath": "snapshots/inc-1769901453625-m93sd1w.png",
+    "description": "Person holding a package of oranges and a backpack, looking at the oranges.",
+    "cameraId": "your-camera",
+    "timestamp": "00:19",
+    "createdAt": "2026-01-31T23:17:33.724Z"
+  },
+  {
+    "id": "inc-1769901449810-7k7m2ij",
+    "snapshotPath": "snapshots/inc-1769901449810-7k7m2ij.jpg",
+    "description": "Person opening a backpack, potentially placing or handling items inside.",
+    "cameraId": "your-camera",
+    "timestamp": "00:13",
+    "createdAt": "2026-01-31T23:17:29.812Z"
+  },
+  {
+    "id": "inc-1769901165974-3g5cgck",
+    "snapshotPath": "snapshots/inc-1769901165974-3g5cgck.png",
+    "description": "Person visible in frame with an open backpack.",
+    "cameraId": "your-camera",
+    "timestamp": "00:21",
+    "createdAt": "2026-01-31T23:12:46.166Z"
+  },
+  {
+    "id": "inc-1769901162654-y9jxirn",
+    "snapshotPath": "snapshots/inc-1769901162654-y9jxirn.png",
+    "description": "Person is holding a blue item and appears to be interacting with a bag",
+    "cameraId": "your-camera",
+    "timestamp": "00:18",
+    "createdAt": "2026-01-31T23:12:42.662Z"
+  },
+  {
+    "id": "inc-1769901160255-0dxfz0f",
+    "snapshotPath": "snapshots/inc-1769901160255-0dxfz0f.jpg",
+    "description": "Person holding a net bag of oranges and positioning them near a bag",
+    "cameraId": "your-camera",
+    "timestamp": "00:16",
+    "createdAt": "2026-01-31T23:12:40.261Z"
+  },
+  {
+    "id": "inc-1769901157927-xsv27nx",
+    "snapshotPath": "snapshots/inc-1769901157927-xsv27nx.jpg",
+    "description": "Person holding a snack package and backpack, raising the item.",
+    "cameraId": "your-camera",
+    "timestamp": "00:13",
+    "createdAt": "2026-01-31T23:12:37.952Z"
+  },
+  {
+    "id": "inc-1769901155650-zl5erj4",
+    "snapshotPath": "snapshots/inc-1769901155650-zl5erj4.jpg",
+    "description": "Person holding a package of oranges and appearing to place them into a backpack.",
+    "cameraId": "your-camera",
+    "timestamp": "00:11",
+    "createdAt": "2026-01-31T23:12:35.652Z"
+  },
+  {
+    "id": "inc-1769901147328-v8cqzv0",
+    "snapshotPath": "snapshots/inc-1769901147328-v8cqzv0.jpg",
+    "description": "Person holding a blue package of chips and opening a bag. Possible concealment of chips.",
+    "cameraId": "your-camera",
+    "timestamp": "00:03",
+    "createdAt": "2026-01-31T23:12:27.335Z"
+  },
+  {
     "id": "inc-1769900634512-xrve1ck",
     "snapshotPath": "snapshots/inc-1769900634512-xrve1ck.png",
     "description": "Person holding a bag of oranges and placing it into a bag",
