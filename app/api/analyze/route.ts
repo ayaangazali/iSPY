@@ -1,19 +1,18 @@
-import { NextResponse } from "next/server"
-import OpenAI from "openai"
-
-const getOpenAIClient = () => {
-  const apiKey = process.env.OPENAI_API_KEY
-  if (!apiKey) {
-    throw new Error('OpenAI API key not found in environment variables')
-  }
-  return new OpenAI({ apiKey })
-}
+import { NextResponse } from "next/server";
+import { isMiniMaxConfigured } from "@/lib/minimax/client";
 
 export async function POST(request: Request) {
-  try {
-    const { videoUrl } = await request.json()
+  if (!isMiniMaxConfigured()) {
+    return NextResponse.json(
+      { error: "MiniMax API key not properly configured" },
+      { status: 500 }
+    );
+  }
 
-    // mocking right now
+  try {
+    const { videoUrl } = await request.json();
+
+    // Mock timestamps for now - to be replaced with actual video analysis
     const mockTimestamps = [
       {
         timestamp: "00:03",
@@ -31,13 +30,15 @@ export async function POST(request: Request) {
         timestamp: "04:20",
         description: "Summary of key takeaways",
       },
-    ]
+    ];
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    return NextResponse.json(mockTimestamps)
+    return NextResponse.json(mockTimestamps);
   } catch (error) {
-    return NextResponse.json({ error: "Error analyzing video" }, { status: 500 })
+    return NextResponse.json(
+      { error: "Error analyzing video" },
+      { status: 500 }
+    );
   }
 }
-

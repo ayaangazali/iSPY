@@ -1,28 +1,35 @@
 "use server";
 
-import OpenAI from "openai";
-
-const API_KEY = process.env.OPENAI_API_KEY;
-if (!API_KEY) {
-    throw new Error('OPENAI_API_KEY environment variable is not set');
-}
-const openai = new OpenAI({ apiKey: API_KEY });
+import {
+  getMiniMaxClient,
+  isMiniMaxConfigured,
+  MINIMAX_MODELS,
+} from "@/lib/minimax/client";
 
 export interface VideoEvent {
-    timestamp: string;
-    description: string;
-    isDangerous: boolean;
+  timestamp: string;
+  description: string;
+  isDangerous: boolean;
 }
 
-export async function detectEvents(base64Image: string, transcript: string = ''): Promise<{ events: VideoEvent[], rawResponse: string }> {
-    console.log('Starting frame analysis...');
-    try {
-        if (!base64Image) {
-            throw new Error("No image data provided");
-        }
+export async function detectEvents(
+  base64Image: string,
+  transcript: string = ""
+): Promise<{ events: VideoEvent[]; rawResponse: string }> {
+  console.log("Starting frame analysis...");
+  try {
+    if (!base64Image) {
+      throw new Error("No image data provided");
+    }
 
-        console.log('Sending image to OpenAI API...');
-        const prompt = `Analyze this security camera frame.
+    if (!isMiniMaxConfigured()) {
+      throw new Error("MINIMAX_API_KEY environment variable is not set");
+    }
+
+    const minimax = getMiniMaxClient();
+
+    console.log("Sending image to MiniMax API...");
+    const prompt = `Analyze this security camera frame.
 
 **INCIDENT RULE — ONLY FLAG WHEN THERE IS PROOF:**
 - Having a bag or carrying items is OK. Do NOT flag "person holding a bag" or "carrying items" by itself.
@@ -45,8 +52,7 @@ If the person only has a bag or is only carrying items and is NOT placing anythi
 **5. Violence/Threats:** Altercation, weapons → isDangerous: true.
 
 **6. Other:** Vandalism, trespassing → isDangerous: true.
-${transcript ? `Consider this audio transcript: "${transcript}"
-` : ''}
+${transcript ? `Consider this audio transcript: "${transcript}"\n` : ""}
 Return ONLY valid JSON in this format:
 
 {
@@ -60,108 +66,69 @@ Return ONLY valid JSON in this format:
 }
 Remember: isDangerous true ONLY for placing into bag/clothing (with proof), concealment under clothing, medical, falls, violence, or other dangerous behavior. NOT for simply holding a bag or carrying items.`;
 
-        try {
-            const response = await openai.chat.completions.create({
-                model: "gpt-4o",
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are a security camera analysis system. You MUST respond ONLY with valid JSON in the exact format specified. Never respond with explanatory text, apologies, or refusals. If you cannot analyze the image, return an empty events array."
-                    },
-                    {
-                        role: "user",
-                        content: [
-                            { type: "text", text: prompt },
-                            {
-                                type: "image_url",
-                                image_url: {
-                                    url: base64Image,
-                                },
-                            },
-                        ],
-                    },
-                ],
-                max_tokens: 1000,
-                response_format: { type: "json_object" },
-            });
+    const systemPrompt =
+      "You are a security camera analysis system. You MUST respond ONLY with valid JSON in the exact format specified. Never respond with explanatory text, apologies, or refusals. If you cannot analyze the image, return an empty events array.";
 
-            const text = response.choices[0]?.message?.content || "";
-            console.log('Raw API Response:', text);
+    try {
+      const text = await minimax.analyzeImage(base64Image, prompt, systemPrompt, {
+        maxTokens: 1000,
+        jsonResponse: true,
+      });
 
-            // Check if response is empty or null
-            if (!text || text.trim().length === 0) {
-                console.log('Empty response from API, returning empty events');
-                return {
-                    events: [],
-                    rawResponse: "No content in API response"
-                };
-            }
+      console.log("Raw API Response:", text);
 
-            // Check if the response is a refusal or non-JSON response
-            if (text.includes("I'm sorry") || text.includes("I cannot") || text.includes("I can't")) {
-                console.log('API refused to process image, returning empty events');
-                return {
-                    events: [],
-                    rawResponse: "No events detected in this frame"
-                };
-            }
+      if (!text || text.trim().length === 0) {
+        console.log("Empty response from API, returning empty events");
+        return {
+          events: [],
+          rawResponse: "No content in API response",
+        };
+      }
 
-            // Try to extract JSON from the response, handling potential code blocks
-            let jsonStr = text.trim();
+      if (
+        text.includes("I'm sorry") ||
+        text.includes("I cannot") ||
+        text.includes("I can't")
+      ) {
+        console.log("API refused to process image, returning empty events");
+        return {
+          events: [],
+          rawResponse: "No events detected in this frame",
+        };
+      }
 
-            // First try to extract content from code blocks if present
-            const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
-            if (codeBlockMatch) {
-                jsonStr = codeBlockMatch[1];
-                console.log('Extracted JSON from code block:', jsonStr);
-            } else if (!jsonStr.startsWith('{')) {
-                // If no code block and doesn't start with {, try to find raw JSON
-                const jsonMatch = text.match(/\{[^]*\}/);
-                if (jsonMatch) {
-                    jsonStr = jsonMatch[0];
-                    console.log('Extracted raw JSON:', jsonStr);
-                } else {
-                    // No JSON found at all
-                    console.log('No JSON found in response, returning empty events');
-                    return {
-                        events: [],
-                        rawResponse: text
-                    };
-                }
-            }
-
-            // Final check before parsing
-            if (!jsonStr || jsonStr.trim().length === 0) {
-                console.log('Empty JSON string, returning empty events');
-                return {
-                    events: [],
-                    rawResponse: text
-                };
-            }
-
-            try {
-                const parsed = JSON.parse(jsonStr);
-                return {
-                    events: Array.isArray(parsed.events) ? parsed.events : [],
-                    rawResponse: text
-                };
-            } catch (parseError) {
-                console.error('Error parsing JSON:', parseError);
-                console.error('Failed JSON string:', jsonStr);
-                console.log('Attempting to return empty events due to parse error');
-                // Return empty events instead of throwing error
-                return {
-                    events: [],
-                    rawResponse: text || "Failed to analyze frame"
-                };
-            }
-
-        } catch (error) {
-            console.error('Error calling API:', error);
-            throw error;
+      let jsonStr = text.trim();
+      const codeBlockMatch = text.match(/```(?:json)?\s*({[\s\S]*?})\s*```/);
+      if (codeBlockMatch) {
+        jsonStr = codeBlockMatch[1];
+      } else if (!jsonStr.startsWith("{")) {
+        const jsonMatch = text.match(/\{[^]*\}/);
+        if (jsonMatch) {
+          jsonStr = jsonMatch[0];
+        } else {
+          return { events: [], rawResponse: text };
         }
+      }
+
+      if (!jsonStr || jsonStr.trim().length === 0) {
+        return { events: [], rawResponse: text };
+      }
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        return {
+          events: Array.isArray(parsed.events) ? parsed.events : [],
+          rawResponse: text,
+        };
+      } catch {
+        return { events: [], rawResponse: text || "Failed to analyze frame" };
+      }
     } catch (error) {
-        console.error('Error in detectEvents:', error);
-        throw error;
+      console.error("Error calling API:", error);
+      throw error;
     }
+  } catch (error) {
+    console.error("Error in detectEvents:", error);
+    throw error;
+  }
 }
