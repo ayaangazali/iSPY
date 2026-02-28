@@ -1,7 +1,7 @@
 /**
  * Concealment pipeline — suspicion → capture → judge → gate → voice → log
  *
- * Runs without MiniMax: LocalFallbackJudge + LocalVoiceAlert. MiniMax optional via env.
+ * Runs with LocalFallbackJudge + LocalVoiceAlert.
  */
 
 import type { TrackedPerson, ZoneConfig, SuspicionResult, JudgeResult } from "./types";
@@ -23,8 +23,8 @@ export interface PipelineInput {
 export interface PipelineResult {
   status: "alerted" | "suppressed" | "logged_only" | "fallback_used";
   suppressed_reason?: string;
-  judge_used: "local" | "minimax";
-  voice_used: "local" | "minimax";
+  judge_used: "local" | "gemini";
+  voice_used: "local" | "gemini";
   audio_path?: string;
 }
 
@@ -37,7 +37,7 @@ export async function runConcealmentPipeline(input: PipelineInput): Promise<Pipe
   const voice = getVoiceAlert();
 
   let judgeResult: JudgeResult;
-  let judgeUsed: "local" | "minimax" = "local";
+  let judgeUsed: "local" | "gemini" = "local";
 
   try {
     judgeResult = await judge.judge({
@@ -90,7 +90,7 @@ export async function runConcealmentPipeline(input: PipelineInput): Promise<Pipe
     };
   }
 
-  let voiceUsed: "local" | "minimax" = "local";
+  let voiceUsed: "local" | "gemini" = "local";
   let audioPath: string | undefined;
 
   try {
@@ -112,11 +112,11 @@ export async function runConcealmentPipeline(input: PipelineInput): Promise<Pipe
     judge_result: judgeResult,
     voice_used: voiceUsed,
     audio_path: audioPath,
-    status: voiceUsed === "minimax" ? "alerted" : "fallback_used",
+    status: voiceUsed === "gemini" ? "alerted" : "fallback_used",
   }).catch((e) => console.error("[ConcealmentPipeline] log error:", e));
 
   return {
-    status: voiceUsed === "minimax" ? "alerted" : "fallback_used",
+    status: voiceUsed === "gemini" ? "alerted" : "fallback_used",
     judge_used: judgeUsed,
     voice_used: voiceUsed,
     audio_path: audioPath,

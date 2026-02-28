@@ -2,7 +2,7 @@
  * Vision Agent - "Analyst Morgan"
  *
  * Personality: Methodical analyst, focuses on visual evidence and material detection.
- * Uses YOLO for object detection and MiniMax M2.1 for reasoning about behavior.
+ * Uses YOLO for object detection and Gemini for reasoning about behavior.
  *
  * Role: Analyze visual frames for:
  * - Object detection (bags, merchandise, concealment)
@@ -11,7 +11,7 @@
  * - Zone violations
  */
 
-import { getMiniMaxClient, isMiniMaxConfigured } from "@/lib/minimax/client";
+import { getGeminiClient, isGeminiConfigured } from "@/lib/gemini/client";
 import type {
   AgentInterface,
   AgentId,
@@ -40,10 +40,10 @@ export class VisionAgent implements AgentInterface {
       ? this.formatYoloDetections(input.visualData.yoloDetections)
       : "No object detection data available.";
 
-    // If we have frame data and MiniMax is configured, analyze with vision
-    if (input.visualData?.frameBase64 && isMiniMaxConfigured()) {
+    // If we have frame data and Gemini is configured, analyze with vision
+    if (input.visualData?.frameBase64 && isGeminiConfigured()) {
       try {
-        const minimax = getMiniMaxClient();
+        const gemini = getGeminiClient();
         const prompt = VISION_AGENT_ANALYSIS_PROMPT.replace(
           "{YOLO_DETECTIONS}",
           yoloSummary
@@ -51,7 +51,7 @@ export class VisionAgent implements AgentInterface {
           .replace("{LOCATION}", input.location)
           .replace("{TIMESTAMP}", input.timestamp.toISOString());
 
-        const response = await minimax.analyzeImage(
+        const response = await gemini.analyzeImage(
           input.visualData.frameBase64,
           prompt,
           VISION_AGENT_SYSTEM_PROMPT,
@@ -78,7 +78,7 @@ export class VisionAgent implements AgentInterface {
       }
     }
 
-    // YOLO-only analysis without frame or without MiniMax
+    // YOLO-only analysis without frame or without Gemini
     return this.analyzeYoloOnly(input.visualData?.yoloDetections ?? []);
   }
 
@@ -142,7 +142,7 @@ export class VisionAgent implements AgentInterface {
     previousMessage: AgentMessage,
     context: ConversationContext
   ): Promise<AgentMessage> {
-    if (!isMiniMaxConfigured()) {
+    if (!isGeminiConfigured()) {
       return {
         id: `msg-${Date.now()}-vision`,
         agentId: this.id,
@@ -158,7 +158,7 @@ export class VisionAgent implements AgentInterface {
     }
 
     try {
-      const minimax = getMiniMaxClient();
+      const gemini = getGeminiClient();
       const conversationHistory = context.messages
         .map((m) => `[${m.agentId}]: ${m.content}`)
         .join("\n");
@@ -177,7 +177,7 @@ Respond with your visual analysis perspective. Be precise and evidence-based.
 Reference specific visual observations. Address any audio concerns raised.
 Keep response under 100 words.`;
 
-      const response = await minimax.textCompletion([
+      const response = await gemini.textCompletion([
         { role: "system", content: VISION_AGENT_SYSTEM_PROMPT },
         { role: "user", content: prompt },
       ]);

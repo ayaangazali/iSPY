@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
-import { isMiniMaxConfigured } from "@/lib/minimax/client";
+import { isGeminiConfigured } from "@/lib/gemini/client";
 
 export async function POST(request: Request) {
-  if (!isMiniMaxConfigured()) {
+  if (!isGeminiConfigured()) {
     return NextResponse.json(
-      { error: "MiniMax API key not properly configured" },
+      { error: "Gemini API key not properly configured" },
       { status: 500 }
     );
   }

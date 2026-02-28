@@ -1,7 +1,5 @@
 /**
- * Concealment Judge — Local (default) + optional MiniMax VLM
- *
- * LocalFallbackJudge: no key required. MiniMaxVLMJudge: only if ENABLE_MINIMAX_VLM=1 and MINIMAX_API_KEY set.
+ * Concealment Judge — Local (default). No API key required.
  */
 
 import type { JudgeResult, SuspicionResult } from "./types";
@@ -42,42 +40,9 @@ export class LocalFallbackJudge implements IConcealmentJudge {
 }
 
 /**
- * MiniMax VLM judge — only used when ENABLE_MINIMAX_VLM=1 and MINIMAX_API_KEY set.
- * Timeout 20s, retry 2 on 429/5xx. On failure, fall back to LocalFallbackJudge.
+ * Gemini VLM judge is available via getGeminiClient() from @/lib/gemini/client if needed.
+ * To add vision-based judging, implement using getGeminiClient() from @/lib/gemini/client.
  */
-export async function createMiniMaxVLMJudge(): Promise<IConcealmentJudge | null> {
-  const key = process.env.MINIMAX_API_KEY;
-  const enabled = process.env.ENABLE_MINIMAX_VLM === "1" || process.env.ENABLE_MINIMAX_VLM === "true";
-  if (!key || !enabled) return null;
-
-  const TIMEOUT_MS = 20000;
-  const MAX_RETRIES = 2;
-  const RATE_LIMIT_PER_CAMERA = 6;
-  const RATE_WINDOW_MS = 60000;
-  const rateCount = new Map<string, number[]>();
-
-  function checkRateLimit(cameraId: string): boolean {
-    const now = Date.now();
-    const list = rateCount.get(cameraId) ?? [];
-    const inWindow = list.filter(t => t >= now - RATE_WINDOW_MS);
-    if (inWindow.length >= RATE_LIMIT_PER_CAMERA) return false;
-    inWindow.push(now);
-    rateCount.set(cameraId, inWindow.slice(-RATE_LIMIT_PER_CAMERA));
-    return true;
-  }
-
-  return {
-    async judge(input: ConcealmentJudgeInput): Promise<JudgeResult> {
-      if (!checkRateLimit(input.cameraId)) {
-        return new LocalFallbackJudge().judge(input);
-      }
-      // MiniMax VLM: would call image API with prompt (no items, concealment only, no weapons).
-      // For this repo we do not implement the actual HTTP call to avoid requiring key.
-      // When implemented: POST images + prompt, parse JSON, timeout/retry, on failure -> LocalFallbackJudge.
-      return new LocalFallbackJudge().judge(input);
-    },
-  };
-}
 
 let defaultJudge: IConcealmentJudge = new LocalFallbackJudge();
 
@@ -86,7 +51,6 @@ export function getConcealmentJudge(): IConcealmentJudge {
 }
 
 export async function initConcealmentJudge(): Promise<IConcealmentJudge> {
-  const minimax = await createMiniMaxVLMJudge();
-  defaultJudge = minimax ?? new LocalFallbackJudge();
+  defaultJudge = new LocalFallbackJudge();
   return defaultJudge;
 }

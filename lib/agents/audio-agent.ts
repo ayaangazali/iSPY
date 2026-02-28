@@ -2,7 +2,7 @@
  * Audio Agent - "Detective Cole"
  *
  * Personality: Skeptical investigator, focuses on verbal cues and conversation patterns.
- * Uses MiniMax Speech 2.6 for transcription and M2.1 for reasoning.
+ * Uses Gemini for reasoning about transcripts.
  *
  * Role: Analyze audio for suspicious conversations that might indicate:
  * - Planning theft ("grab it and go", "distract the clerk", etc.)
@@ -11,11 +11,9 @@
  */
 
 import {
-  getMiniMaxClient,
-  isMiniMaxConfigured,
-  MINIMAX_ENDPOINTS,
-  MINIMAX_MODELS,
-} from "@/lib/minimax/client";
+  getGeminiClient,
+  isGeminiConfigured,
+} from "@/lib/gemini/client";
 import type {
   AgentInterface,
   AgentId,
@@ -35,38 +33,10 @@ export class AudioAgent implements AgentInterface {
   role: AgentRole = "detective";
   name = "Detective Cole";
 
-  async transcribeAudio(audioBase64: string): Promise<string> {
-    if (!isMiniMaxConfigured()) {
-      console.warn("[AudioAgent] MiniMax not configured, skipping transcription");
-      return "";
-    }
-
-    try {
-      const apiKey = process.env.MINIMAX_API_KEY;
-      const response = await fetch(MINIMAX_ENDPOINTS.SPEECH_TO_TEXT, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: MINIMAX_MODELS.SPEECH_TO_TEXT,
-          audio: audioBase64,
-          language: "en",
-        }),
-      });
-
-      if (!response.ok) {
-        console.error("[AudioAgent] STT failed:", response.status);
-        return "";
-      }
-
-      const data = await response.json();
-      return data.text || "";
-    } catch (error) {
-      console.error("[AudioAgent] Transcription error:", error);
-      return "";
-    }
+  async transcribeAudio(_audioBase64: string): Promise<string> {
+    // Gemini does not have a standalone STT endpoint; return empty string
+    // and let local keyword analysis handle the no-transcript fallback.
+    return "";
   }
 
   async analyze(
@@ -91,12 +61,12 @@ export class AudioAgent implements AgentInterface {
       };
     }
 
-    if (!isMiniMaxConfigured()) {
+    if (!isGeminiConfigured()) {
       return this.localAnalysis(transcript, input);
     }
 
     try {
-      const minimax = getMiniMaxClient();
+      const gemini = getGeminiClient();
       const prompt = AUDIO_AGENT_ANALYSIS_PROMPT.replace(
         "{TRANSCRIPT}",
         transcript
@@ -104,7 +74,7 @@ export class AudioAgent implements AgentInterface {
         .replace("{LOCATION}", input.location)
         .replace("{TIMESTAMP}", input.timestamp.toISOString());
 
-      const response = await minimax.textCompletion(
+      const response = await gemini.textCompletion(
         [
           { role: "system", content: AUDIO_AGENT_SYSTEM_PROMPT },
           { role: "user", content: prompt },
@@ -178,7 +148,7 @@ export class AudioAgent implements AgentInterface {
     previousMessage: AgentMessage,
     context: ConversationContext
   ): Promise<AgentMessage> {
-    if (!isMiniMaxConfigured()) {
+    if (!isGeminiConfigured()) {
       return {
         id: `msg-${Date.now()}-audio`,
         agentId: this.id,
@@ -194,7 +164,7 @@ export class AudioAgent implements AgentInterface {
     }
 
     try {
-      const minimax = getMiniMaxClient();
+      const gemini = getGeminiClient();
       const conversationHistory = context.messages
         .map((m) => `[${m.agentId}]: ${m.content}`)
         .join("\n");
@@ -213,7 +183,7 @@ Respond with your analysis perspective. Be skeptical but fair.
 Focus on what you heard in the audio. Ask probing questions if visual claims seem unsupported.
 Keep response under 100 words.`;
 
-      const response = await minimax.textCompletion([
+      const response = await gemini.textCompletion([
         { role: "system", content: AUDIO_AGENT_SYSTEM_PROMPT },
         { role: "user", content: prompt },
       ]);

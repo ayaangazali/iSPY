@@ -1,10 +1,9 @@
 "use server";
 
 import {
-  getMiniMaxClient,
-  isMiniMaxConfigured,
-  MINIMAX_MODELS,
-} from "@/lib/minimax/client";
+  getGeminiClient,
+  isGeminiConfigured,
+} from "@/lib/gemini/client";
 
 export interface VideoEvent {
   timestamp: string;
@@ -22,13 +21,13 @@ export async function detectEvents(
       throw new Error("No image data provided");
     }
 
-    if (!isMiniMaxConfigured()) {
-      throw new Error("MINIMAX_API_KEY environment variable is not set");
+    if (!isGeminiConfigured()) {
+      throw new Error("GEMINI_API_KEY environment variable is not set");
     }
 
-    const minimax = getMiniMaxClient();
+    const gemini = getGeminiClient();
 
-    console.log("Sending image to MiniMax API...");
+    console.log("Sending image to Gemini API...");
     const prompt = `Analyze this security camera frame.
 
 **INCIDENT RULE — ONLY FLAG WHEN THERE IS PROOF:**
@@ -70,7 +69,7 @@ Remember: isDangerous true ONLY for placing into bag/clothing (with proof), conc
       "You are a security camera analysis system. You MUST respond ONLY with valid JSON in the exact format specified. Never respond with explanatory text, apologies, or refusals. If you cannot analyze the image, return an empty events array.";
 
     try {
-      const text = await minimax.analyzeImage(base64Image, prompt, systemPrompt, {
+      const text = await gemini.analyzeImage(base64Image, prompt, systemPrompt, {
         maxTokens: 1000,
         jsonResponse: true,
       });

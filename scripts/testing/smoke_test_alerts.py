@@ -5,7 +5,7 @@ Smoke test for grocery shoplift alerts (person-only, no CCTV needed).
 - Simulates 5 "person tracks" with exit_without_checkout events.
 - Verifies incidents.jsonl is written.
 - Verifies cooldown works (same track/camera suppressed).
-- Verifies LocalVoiceAlert produces beep/TTS (no MiniMax key required).
+- Verifies LocalVoiceAlert produces beep/TTS (no Gemini key required).
 
 Run with ZERO API keys:
   python3 scripts/smoke_test_alerts.py
@@ -126,7 +126,7 @@ def main():
     else:
         print("\n4) alerts/audio/ not present (created when voice alert runs)")
 
-    print("\nDone. System runs without MiniMax keys; local beep/TTS used by default.")
+    print("\nDone. System runs without Gemini keys; local beep/TTS used by default.")
     sys.exit(0)
 
 

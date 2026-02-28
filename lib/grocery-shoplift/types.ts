@@ -62,7 +62,7 @@ export interface SuspicionResult {
   torso_ratio_spike: boolean;
 }
 
-/** Judge result (local or MiniMax) */
+/** Judge result (local or Gemini) */
 export interface JudgeResult {
   concealment_likely: boolean;
   confidence_0_1: number;
@@ -79,9 +79,9 @@ export interface IncidentLogEntry {
   track_id: string;
   suspicion_score: number;
   frame_paths: string[];
-  judge_used: "local" | "minimax";
+  judge_used: "local" | "gemini";
   judge_result: JudgeResult;
-  voice_used: "local" | "minimax";
+  voice_used: "local" | "gemini";
   audio_path?: string;
   status: "alerted" | "suppressed" | "logged_only" | "fallback_used";
   suppressed_reason?: string;

@@ -1,13 +1,12 @@
 /**
  * Shoplifting Alert Pipeline — Gate → Voice → Playback → Log
  *
- * Voice: LOCAL by default (beep or OS TTS). MiniMax only when ENABLE_MINIMAX_TTS=1 and MINIMAX_API_KEY set.
+ * Voice: LOCAL by default (beep or OS TTS). No external TTS service.
  * No unhandled exceptions; safe defaults.
  */
 
 import type { ShopliftingEvent } from "./types";
 import { alertGate } from "./alert-gate";
-import { buildAlertText } from "./minimax-tts";
 import { logTriggered, logSuppressed } from "./incident-log";
 
 export interface PipelineResult {
@@ -17,15 +16,9 @@ export interface PipelineResult {
   fallbackUsed?: boolean;
 }
 
-function useMiniMaxTTS(): boolean {
-  const key = process.env.MINIMAX_API_KEY;
-  const enabled = process.env.ENABLE_MINIMAX_TTS === "1" || process.env.ENABLE_MINIMAX_TTS === "true";
-  return !!(key && enabled);
-}
-
 /**
- * Process one ShopliftingEvent: gate → voice (local or MiniMax) → playback → log.
- * Default: local voice (beep or say/espeak). MiniMax only when explicitly enabled.
+ * Process one ShopliftingEvent: gate → voice (local) → playback → log.
+ * Uses local voice (beep or say/espeak).
  */
 export async function runShopliftAlertPipeline(
   event: ShopliftingEvent
@@ -43,24 +36,11 @@ export async function runShopliftAlertPipeline(
       };
     }
 
-    const alertText = buildAlertText(event.location);
+    const alertText = `Security alert. Possible shoplifting detected at ${event.location}.`;
     let audioPath: string | undefined;
     let fallbackUsed = true;
 
-    if (useMiniMaxTTS()) {
-      try {
-        const { generateAlertAudio } = await import("./minimax-tts");
-        const ttsResult = await generateAlertAudio(event.location, event.camera_id);
-        if (ttsResult.audioPath) {
-          audioPath = ttsResult.audioPath;
-          fallbackUsed = ttsResult.fallbackUsed ?? false;
-        }
-      } catch (_e) {
-        // fall through to local
-      }
-    }
-
-    if (!audioPath) {
+    {
       const { getVoiceAlert } = await import("@/lib/grocery-shoplift/voice");
       const voice = getVoiceAlert();
       const result = await voice.play(event.location, event.camera_id);

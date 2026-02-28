@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
-import { getMiniMaxClient, isMiniMaxConfigured } from "@/lib/minimax/client";
+import { getGeminiClient, isGeminiConfigured } from "@/lib/gemini/client";
 
 export async function POST(request: Request) {
-  if (!isMiniMaxConfigured()) {
+  if (!isGeminiConfigured()) {
     return NextResponse.json(
-      { error: "MiniMax API key not properly configured" },
+      { error: "Gemini API key not properly configured" },
       { status: 500 }
     );
   }
 
   try {
-    const minimax = getMiniMaxClient();
+    const gemini = getGeminiClient();
     const { messages, events } = await request.json();
 
     const contextMessage =
@@ -29,17 +29,17 @@ export async function POST(request: Request) {
 
 ${contextMessage}`;
 
-    console.log("Sending request to MiniMax...");
-    const text = await minimax.textCompletion(
+    console.log("Sending request to Gemini...");
+    const text = await gemini.textCompletion(
       [{ role: "system", content: systemMessage }, ...messages],
       { maxTokens: 500 }
     );
 
     if (!text) {
-      throw new Error("Invalid response from MiniMax");
+      throw new Error("Invalid response from Gemini");
     }
 
-    console.log("Successfully received response from MiniMax");
+    console.log("Successfully received response from Gemini");
     return NextResponse.json({
       content: text,
       role: "assistant",

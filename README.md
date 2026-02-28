@@ -31,9 +31,9 @@ iSPY transforms passive surveillance into an **intelligent loss prevention syste
 
 1. **Multi-Agent Reasoning System**: Two AI agents—Detective Cole (audio analysis) and Analyst Morgan (visual analysis)—converse in real-time to minimize false positives and catch coordinated theft patterns that single-model systems miss.
 
-2. **Real-Time Video Intelligence**: Frame-by-frame analysis using MiniMax M2.1's vision-language capabilities to detect concealment behaviors, suspicious positioning, and zone violations.
+2. **Real-Time Video Intelligence**: Frame-by-frame analysis using Gemini's vision-language capabilities to detect concealment behaviors, suspicious positioning, and zone violations.
 
-3. **Ambient Audio Understanding**: MiniMax Speech 2.6 transcribes and analyzes in-store conversations, detecting planning language ("you grab it, I'll distract them") and coordination patterns invisible to visual-only systems.
+3. **Ambient Audio Understanding**: Gemini transcribes and analyzes in-store conversations, detecting planning language ("you grab it, I'll distract them") and coordination patterns invisible to visual-only systems.
 
 4. **Dynamic Store Optimization**: Incident data feeds into a recommendation engine that identifies high-risk zones and generates actionable store reconfiguration strategies.
 
@@ -66,7 +66,7 @@ iSPY transforms passive surveillance into an **intelligent loss prevention syste
 │         ┌──────────────────────────┼──────────────────────────┐             │
 │         ▼                          ▼                          ▼             │
 │  ┌─────────────┐           ┌─────────────┐           ┌────────────-─┐       │
-│  │   YOLO v8   │           │  MiniMax    │           │  MiniMax     │       │
+│  │   YOLO v8   │           │  Gemini    │           │  Gemini     │       │
 │  │  Detection  │           │   M2.1      │           │ Speech 2.6   │       │
 │  │             │           │  (Vision)   │           │   (STT)      │       │
 │  │ • Person    │           │             │           │              │       │
@@ -118,11 +118,11 @@ iSPY transforms passive surveillance into an **intelligent loss prevention syste
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Why MiniMax M2.1 for Vision Reasoning
+### Why Gemini for Vision Reasoning
 
-Traditional computer vision detects objects. MiniMax M2.1 understands **intent**.
+Traditional computer vision detects objects. Gemini understands **intent**.
 
-| Capability | Traditional CV | MiniMax M2.1 |
+| Capability | Traditional CV | Gemini |
 |------------|---------------|--------------|
 | Detect person holding bag | ✓ | ✓ |
 | Detect item in hand | ✓ | ✓ |
@@ -139,13 +139,13 @@ M2.1's vision-language architecture allows it to:
 
 3. **Apply retail-specific knowledge**: The model understands that organic produce costs more, that fitting room item limits exist, and that self-checkout weight sensors can be fooled—context that transforms raw detections into actionable intelligence.
 
-### Why MiniMax Speech 2.6 for Audio Intelligence
+### Why Gemini for Audio Intelligence
 
 **85% of coordinated retail theft involves verbal communication.**
 
 Criminals plan. They coordinate. They use code words. And none of this appears on camera.
 
-MiniMax Speech 2.6 provides:
+Gemini provides:
 
 1. **Real-Time Transcription**: Sub-200ms latency transcription of ambient store audio, enabling detection of planning language as it happens.
 
@@ -205,15 +205,15 @@ Frame Captured (100ms interval)
          │         │
          │         └──► Person detected? ──► IOU Tracking (track_id assignment)
          │
-         ├──► MiniMax M2.1: Behavior analysis
+         ├──► Gemini: Behavior analysis
          │         │
          │         └──► JSON: {behavior_type, confidence, reasoning, zone}
          │
          └──► If audio chunk ready:
                    │
-                   └──► MiniMax Speech 2.6: Transcription
+                   └──► Gemini: Transcription
                               │
-                              └──► MiniMax M2.1: Semantic analysis of transcript
+                              └──► Gemini: Semantic analysis of transcript
 
 All three streams merge at AGENT COORDINATOR
          │
@@ -244,10 +244,10 @@ All three streams merge at AGENT COORDINATOR
 | Layer | Technology | Purpose |
 |-------|------------|---------|
 | **Frontend** | Next.js 14, TypeScript, Tailwind CSS | Responsive dashboard, real-time updates |
-| **Vision AI** | MiniMax M2.1 (abab7-chat-preview) | Behavioral reasoning, scene understanding |
-| **Audio AI** | MiniMax Speech 2.6 (speech-02-hd) | Real-time transcription, speaker analysis |
+| **Vision AI** | Gemini (abab7-chat-preview) | Behavioral reasoning, scene understanding |
+| **Audio AI** | Gemini (speech-02-hd) | Real-time transcription, speaker analysis |
 | **Object Detection** | TensorFlow.js (BlazeFace, MoveNet) | Client-side face/pose detection |
-| **Voice Alerts** | MiniMax TTS (speech-2.8-turbo) | Natural voice alerts for staff |
+| **Voice Alerts** | Gemini TTS (speech-2.8-turbo) | Natural voice alerts for staff |
 | **Database** | SQLite (better-sqlite3) | Agent conversations, incident logs |
 | **Auth** | Supabase | User management, access control |
 | **Notifications** | Resend API | Email/SMS alerts |
@@ -289,15 +289,15 @@ Visit `http://localhost:3000` to access the dashboard.
 
 ### Prerequisites
 - Node.js 18+
-- MiniMax API Key (optional - system works with local fallbacks)
+- Gemini API Key (optional - system works with local fallbacks)
 
 ### Environment Variables
 
 ```bash
 # Optional - system uses local fallbacks when not configured
-MINIMAX_API_KEY=your_minimax_api_key
-ENABLE_MINIMAX_TTS=1      # Enable voice alerts
-ENABLE_MINIMAX_VLM=1      # Enable vision reasoning
+GEMINI_API_KEY=your_minimax_api_key
+ENABLE_GEMINI_TTS=1      # Enable voice alerts
+ENABLE_GEMINI_VLM=1      # Enable vision reasoning
 
 # Supabase (for auth)
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
@@ -345,4 +345,4 @@ MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
-*Built with MiniMax AI, Next.js, and a refusal to accept that $125 billion in annual losses is "just the cost of doing business."*
+*Built with Gemini AI, Next.js, and a refusal to accept that $125 billion in annual losses is "just the cost of doing business."*

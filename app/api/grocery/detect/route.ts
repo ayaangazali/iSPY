@@ -3,7 +3,7 @@
  *
  * POST /api/grocery/detect
  *
- * Hybrid detection pipeline using MiniMax M2.1:
+ * Hybrid detection pipeline using Gemini:
  * 1. Optional pre-filter (lightweight check if VLM analysis is needed)
  * 2. Full VLM analysis with grocery-specific prompts
  * 3. Scoring with zone multipliers
@@ -12,10 +12,10 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import {
-  getMiniMaxClient,
-  isMiniMaxConfigured,
-  MINIMAX_MODELS,
-} from "@/lib/minimax/client";
+  getGeminiClient,
+  isGeminiConfigured,
+  GEMINI_MODELS,
+} from "@/lib/gemini/client";
 import {
   TheftEvent,
   TheftBehaviorType,
@@ -67,8 +67,8 @@ interface VLMAnalysisResult {
 
 async function shouldAnalyze(imageBase64: string): Promise<boolean> {
   try {
-    const minimax = getMiniMaxClient();
-    return await minimax.prefilterImage(imageBase64, PREFILTER_PROMPT);
+    const gemini = getGeminiClient();
+    return await gemini.prefilterImage(imageBase64, PREFILTER_PROMPT);
   } catch (error) {
     console.error("Pre-filter error, proceeding with analysis:", error);
     return true;
@@ -83,8 +83,8 @@ async function analyzeFrame(
   const prompt = generateRetailTheftPrompt(zones, previousContext);
 
   try {
-    const minimax = getMiniMaxClient();
-    const text = await minimax.analyzeImage(
+    const gemini = getGeminiClient();
+    const text = await gemini.analyzeImage(
       imageBase64,
       prompt,
       RETAIL_THEFT_SYSTEM_PROMPT,
@@ -137,9 +137,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!isMiniMaxConfigured()) {
+    if (!isGeminiConfigured()) {
       return NextResponse.json(
-        { error: "MiniMax API key not configured" },
+        { error: "Gemini API key not configured" },
         { status: 500 }
       );
     }
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
           events: [],
           personTracks: [],
           analysisTimeMs: Date.now() - startTime,
-          modelUsed: `${MINIMAX_MODELS.TEXT_LITE} (pre-filter)`,
+          modelUsed: `${GEMINI_MODELS.TEXT} (pre-filter)`,
           frameAnalyzed: false,
         } as TheftDetectionResponse);
       }
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
         events: [],
         personTracks: [],
         analysisTimeMs: Date.now() - startTime,
-        modelUsed: MINIMAX_MODELS.VISION_REASONING,
+        modelUsed: GEMINI_MODELS.VISION_REASONING,
         frameAnalyzed: true,
         error: "Analysis failed to produce results",
       });
@@ -236,7 +236,7 @@ export async function POST(request: NextRequest) {
       events: significantEvents,
       personTracks: [],
       analysisTimeMs: Date.now() - startTime,
-      modelUsed: MINIMAX_MODELS.VISION_REASONING,
+      modelUsed: GEMINI_MODELS.VISION_REASONING,
       frameAnalyzed: true,
     };
 
@@ -257,7 +257,7 @@ export async function GET() {
   return NextResponse.json({
     name: "Grocery Store Theft Detection API",
     version: "2.0.0",
-    model: "MiniMax M2.1 (abab7-chat-preview)",
+    model: "Gemini (gemini-1.5-flash)",
     endpoints: {
       "POST /api/grocery/detect": {
         description: "Analyze a frame for theft/suspicious behavior",

@@ -11,7 +11,7 @@ Usage:
   # With server running (npm run dev):
   python scripts/test_shoplift_alert.py
 
-  # Dry run (no MiniMax, beep only):
+  # Dry run (no Gemini, beep only):
   DRY_RUN=1 python scripts/test_shoplift_alert.py
 """
 
@@ -100,7 +100,7 @@ def main():
         else:
             print("\n   WARN: triggered but no audioPath in response (check server logs and ./alerts/audio/)")
     else:
-        print("\n   No event triggered (check MINIMAX_API_KEY, DRY_RUN, SHOPLIFT_MIN_CONFIDENCE)")
+        print("\n   No event triggered (check GEMINI_API_KEY, DRY_RUN, SHOPLIFT_MIN_CONFIDENCE)")
 
     print("\nDone. Check ./alerts/incidents.jsonl and ./alerts/audio/ for outputs.")
     sys.exit(0)

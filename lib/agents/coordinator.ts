@@ -8,7 +8,7 @@
 import { AudioAgent } from "./audio-agent";
 import { VisionAgent } from "./vision-agent";
 import { getConversationDatabase } from "./conversation-db";
-import { getMiniMaxClient, isMiniMaxConfigured } from "@/lib/minimax/client";
+import { getGeminiClient, isGeminiConfigured } from "@/lib/gemini/client";
 import { COORDINATOR_CONSENSUS_PROMPT } from "./prompts";
 import type {
   IncidentInput,
@@ -138,12 +138,12 @@ export class AgentCoordinator {
     audioAnalysis: AgentAnalysis,
     visionAnalysis: AgentAnalysis
   ): Promise<ConversationConclusion> {
-    if (!isMiniMaxConfigured()) {
+    if (!isGeminiConfigured()) {
       return this.localConclusion(context, audioAnalysis, visionAnalysis);
     }
 
     try {
-      const minimax = getMiniMaxClient();
+      const gemini = getGeminiClient();
       const conversationText = context.messages
         .map((m) => `[${m.agentId}]: ${m.content}`)
         .join("\n\n");
@@ -155,7 +155,7 @@ export class AgentCoordinator {
         .replace("{VISION_ANALYSIS}", JSON.stringify(visionAnalysis, null, 2))
         .replace("{CONVERSATION}", conversationText);
 
-      const response = await minimax.textCompletion(
+      const response = await gemini.textCompletion(
         [
           {
             role: "system",

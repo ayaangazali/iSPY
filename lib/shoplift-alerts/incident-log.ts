@@ -15,7 +15,6 @@ export interface IncidentLogEntry {
   event: ShopliftingEvent;
   alert_text?: string;
   audio_file_path?: string;
-  minimax_request_id?: string;
   triggered_at: string;
   status: "triggered" | "suppressed";
   reason?: string;
@@ -35,13 +34,12 @@ export async function logTriggered(
   event: ShopliftingEvent,
   alertText: string,
   audioFilePath: string | undefined,
-  traceId: string | undefined
+  _traceId: string | undefined
 ): Promise<void> {
   await logIncident({
     event,
     alert_text: alertText,
     audio_file_path: audioFilePath,
-    minimax_request_id: traceId,
     triggered_at: new Date().toISOString(),
     status: "triggered",
   });

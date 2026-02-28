@@ -1,7 +1,7 @@
 /**
  * Grocery Shoplift (Person-Only) — Public API
  *
- * No MiniMax required. Local judge + local voice by default.
+ * Local judge + local voice by default.
  */
 
 export * from "./types";

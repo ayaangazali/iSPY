@@ -2,7 +2,7 @@
  * Shoplifting Alert API — Ingest ShopliftingEvent and run pipeline
  *
  * POST /api/shoplift-alert — Body: ShopliftingEvent (strict schema).
- * Runs AlertGate → MiniMax TTS → Playback → Log. Returns { triggered, reason?, audioPath? }.
+ * Runs AlertGate → Voice → Playback → Log. Returns { triggered, reason?, audioPath? }.
  */
 
 import { NextRequest, NextResponse } from "next/server";

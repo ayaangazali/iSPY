@@ -1,7 +1,7 @@
 /**
  * Smoke test endpoint — run concealment pipeline with stub data (no CCTV).
  * POST /api/concealment-smoke — simulates 5 exit_without_checkout tracks, runs pipeline.
- * Uses LocalVoiceAlert + LocalFallbackJudge; no MiniMax keys required.
+ * Uses LocalVoiceAlert + LocalFallbackJudge; no API keys required.
  */
 
 import { NextResponse } from "next/server";
@@ -77,7 +77,7 @@ export async function POST() {
   }
 
   return NextResponse.json({
-    message: "Smoke test completed (local judge + local voice, no MiniMax)",
+    message: "Smoke test completed (local judge + local voice, no external AI)",
     results,
   });
 }

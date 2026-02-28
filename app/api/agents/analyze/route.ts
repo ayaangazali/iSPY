@@ -84,12 +84,12 @@ export async function GET() {
         audio: {
           name: "Detective Cole",
           role: "Audio forensics specialist",
-          model: "MiniMax Speech 2.6 + M2.1",
+          model: "Gemini",
         },
         vision: {
           name: "Analyst Morgan",
           role: "Visual evidence specialist",
-          model: "YOLO + MiniMax M2.1",
+          model: "YOLO + Gemini",
         },
       },
       statistics: stats,

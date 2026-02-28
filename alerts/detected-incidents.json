@@ -1,5 +1,117 @@
 [
   {
+    "id": "inc-1769902399347-gd9907p",
+    "snapshotPath": "snapshots/inc-1769902399347-gd9907p.jpg",
+    "description": "Person holding a bag and another person with a backpack visible.",
+    "cameraId": "your-camera",
+    "timestamp": "00:31",
+    "createdAt": "2026-01-31T23:33:19.352Z"
+  },
+  {
+    "id": "inc-1769902396552-eqfjq26",
+    "snapshotPath": "snapshots/inc-1769902396552-eqfjq26.jpg",
+    "description": "Person holding a bottle in hand",
+    "cameraId": "your-camera",
+    "timestamp": "00:28",
+    "createdAt": "2026-01-31T23:33:16.554Z"
+  },
+  {
+    "id": "inc-1769902394348-91185na",
+    "snapshotPath": "snapshots/inc-1769902394348-91185na.jpg",
+    "description": "Person holding multiple water bottles in hand",
+    "cameraId": "your-camera",
+    "timestamp": "00:26",
+    "createdAt": "2026-01-31T23:33:14.357Z"
+  },
+  {
+    "id": "inc-1769902392450-s9uv1z8",
+    "snapshotPath": "snapshots/inc-1769902392450-s9uv1z8.jpg",
+    "description": "Person visible in frame with a water bottle.",
+    "cameraId": "your-camera",
+    "timestamp": "00:24",
+    "createdAt": "2026-01-31T23:33:12.474Z"
+  },
+  {
+    "id": "inc-1769902388083-p7f189q",
+    "snapshotPath": "snapshots/inc-1769902388083-p7f189q.jpg",
+    "description": "Person holding a bag of oranges and placing them into a backpack.",
+    "cameraId": "your-camera",
+    "timestamp": "00:20",
+    "createdAt": "2026-01-31T23:33:08.089Z"
+  },
+  {
+    "id": "inc-1769902385802-e77k8l2",
+    "snapshotPath": "snapshots/inc-1769902385802-e77k8l2.jpg",
+    "description": "Person holding a package of oranges and a bag while looking at the camera.",
+    "cameraId": "your-camera",
+    "timestamp": "00:18",
+    "createdAt": "2026-01-31T23:33:05.807Z"
+  },
+  {
+    "id": "inc-1769902382948-zylkine",
+    "snapshotPath": "snapshots/inc-1769902382948-zylkine.jpg",
+    "description": "Person is handling a black backpack.",
+    "cameraId": "your-camera",
+    "timestamp": "00:15",
+    "createdAt": "2026-01-31T23:33:02.961Z"
+  },
+  {
+    "id": "inc-1769902378215-f52cfps",
+    "snapshotPath": "snapshots/inc-1769902378215-f52cfps.png",
+    "description": "Several people visible in the frame. One person has a backpack, suggesting potential for item concealment.",
+    "cameraId": "your-camera",
+    "timestamp": "00:09",
+    "createdAt": "2026-01-31T23:32:58.216Z"
+  },
+  {
+    "id": "inc-1769902244259-c1jesyu",
+    "snapshotPath": "snapshots/inc-1769902244259-c1jesyu.jpg",
+    "description": "Person holding a backpack, possibly interacting with its contents.",
+    "cameraId": "your-camera",
+    "timestamp": "00:22",
+    "createdAt": "2026-01-31T23:30:44.264Z"
+  },
+  {
+    "id": "inc-1769902239006-swxxpzt",
+    "snapshotPath": "snapshots/inc-1769902239006-swxxpzt.jpg",
+    "description": "Person placing food item into backpack",
+    "cameraId": "your-camera",
+    "timestamp": "00:19",
+    "createdAt": "2026-01-31T23:30:39.012Z"
+  },
+  {
+    "id": "inc-1769902236673-rrlnwps",
+    "snapshotPath": "snapshots/inc-1769902236673-rrlnwps.png",
+    "description": "Person holding a bag of oranges and placing it near a backpack.",
+    "cameraId": "your-camera",
+    "timestamp": "00:17",
+    "createdAt": "2026-01-31T23:30:36.678Z"
+  },
+  {
+    "id": "inc-1769902234256-p7nztwg",
+    "snapshotPath": "snapshots/inc-1769902234256-p7nztwg.jpg",
+    "description": "Person opening backpack and potentially placing something inside",
+    "cameraId": "your-camera",
+    "timestamp": "00:15",
+    "createdAt": "2026-01-31T23:30:34.271Z"
+  },
+  {
+    "id": "inc-1769902231879-q4grmsx",
+    "snapshotPath": "snapshots/inc-1769902231879-q4grmsx.jpg",
+    "description": "Person with backpack holding a small item in hand.",
+    "cameraId": "your-camera",
+    "timestamp": "00:12",
+    "createdAt": "2026-01-31T23:30:31.881Z"
+  },
+  {
+    "id": "inc-1769902228323-d4f88u1",
+    "snapshotPath": "snapshots/inc-1769902228323-d4f88u1.jpg",
+    "description": "Person on the left is holding an item in hand.",
+    "cameraId": "your-camera",
+    "timestamp": "00:05",
+    "createdAt": "2026-01-31T23:30:28.325Z"
+  },
+  {
     "id": "inc-1769901581697-06fjqpa",
     "snapshotPath": "snapshots/inc-1769901581697-06fjqpa.png",
     "description": "Person holding a backpack, potentially interacting with its contents.",

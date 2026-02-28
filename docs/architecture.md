@@ -22,7 +22,7 @@ This document describes the technical architecture of the iSPY theft detection s
 │         ┌──────────────────────────┼──────────────────────────┐             │
 │         ▼                          ▼                          ▼             │
 │  ┌─────────────┐           ┌─────────────┐           ┌─────────────┐        │
-│  │   YOLO v8   │           │  MiniMax    │           │  MiniMax    │        │
+│  │   YOLO v8   │           │  Gemini    │           │  Gemini    │        │
 │  │  Detection  │           │   M2.1      │           │ Speech 2.6  │        │
 │  └──────┬──────┘           └──────┬──────┘           └──────┬──────┘        │
 │         │                         │                         │               │
@@ -76,7 +76,7 @@ lib/
 ├── shoplift-alerts/       # Alert system with TTS
 │   ├── types.ts          # ShopliftingEvent schema
 │   ├── alert-gate.ts     # Cooldown/debouncing
-│   ├── minimax-tts.ts    # MiniMax TTS client
+│   ├── minimax-tts.ts    # Gemini TTS client
 │   ├── playback.ts       # Audio playback
 │   ├── incident-log.ts   # JSONL logging
 │   └── pipeline.ts       # Alert pipeline
@@ -89,8 +89,8 @@ lib/
 │   ├── conversation-db.ts # SQLite storage
 │   └── prompts.ts        # Agent personalities
 │
-├── minimax/               # MiniMax API client
-│   └── client.ts         # Unified MiniMax client
+├── gemini/               # Gemini API client
+│   └── client.ts         # Unified Gemini client
 │
 └── store-optimizer/       # Store recommendations
     └── analyzer.ts       # Zone analysis & suggestions
@@ -112,7 +112,7 @@ Frame → YOLO Detection → Zone Matching → VLM Analysis → Scoring → Aler
 **Flow:**
 1. Frame captured from video feed
 2. YOLO detects persons, objects
-3. VLM (MiniMax M2.1) analyzes behavior
+3. VLM (Gemini) analyzes behavior
 4. Score calculated based on behavior + zone risk
 5. Alert triggered if score exceeds threshold
 
@@ -173,7 +173,7 @@ app/api/
 
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│   Detector   │────▶│  AlertGate   │────▶│   MiniMax    │
+│   Detector   │────▶│  AlertGate   │────▶│   Gemini    │
 │  (Event)     │     │ (Cooldown)   │     │    TTS       │
 └──────────────┘     └──────────────┘     └──────────────┘
                                                 │
@@ -215,18 +215,18 @@ See [getting-started.md](./getting-started.md#environment-configuration)
 | Layer | Technology |
 |-------|------------|
 | Frontend | Next.js 14, TypeScript, Tailwind CSS |
-| Vision AI | MiniMax M2.1 (abab7-chat-preview) |
-| Audio AI | MiniMax Speech 2.6 (speech-02-hd) |
-| Voice Alerts | MiniMax TTS (speech-2.8-turbo) |
+| Vision AI | Gemini (gemini-1.5-flash) |
+| Audio AI | Gemini (gemini-1.5-flash) |
+| Voice Alerts | Gemini TTS |
 | Object Detection | TensorFlow.js (client-side) |
 | Database | SQLite (better-sqlite3) |
 | Auth | Supabase |
 
 ## Fallback Strategy
 
-When MiniMax is not configured:
+When Gemini is not configured:
 
-| Component | MiniMax | Local Fallback |
+| Component | Gemini | Local Fallback |
 |-----------|---------|----------------|
 | Vision Analysis | M2.1 VLM | Rule-based pattern matching |
 | Audio Transcription | Speech 2.6 | Not available |

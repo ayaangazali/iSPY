@@ -4,13 +4,13 @@
  * Analyzes incident data from agent conversations to generate
  * store reconfiguration recommendations for loss prevention.
  *
- * Uses MiniMax M2.1 for intelligent analysis and recommendation generation.
+ * Uses Gemini for intelligent analysis and recommendation generation.
  */
 
 import { readFileSync, writeFileSync } from "fs";
 import path from "path";
 import { getConversationDatabase } from "@/lib/agents/conversation-db";
-import { getMiniMaxClient, isMiniMaxConfigured } from "@/lib/minimax/client";
+import { getGeminiClient, isGeminiConfigured } from "@/lib/gemini/client";
 
 const CONFIG_PATH = path.join(process.cwd(), "data", "store-configuration.md");
 
@@ -183,7 +183,7 @@ export class StoreOptimizer {
     // Read current configuration
     const currentConfig = this.readConfigFile();
 
-    if (isMiniMaxConfigured()) {
+    if (isGeminiConfigured()) {
       return this.generateAIRecommendations(
         incidents,
         zoneAnalysis,
@@ -199,7 +199,7 @@ export class StoreOptimizer {
     zoneAnalysis: ZoneAnalysis[],
     currentConfig: string
   ): Promise<StoreRecommendation[]> {
-    const minimax = getMiniMaxClient();
+    const gemini = getGeminiClient();
 
     const prompt = `You are a retail loss prevention consultant. Analyze the following incident data and current store configuration to generate specific, actionable recommendations.
 
@@ -239,7 +239,7 @@ Return JSON array:
 ]`;
 
     try {
-      const response = await minimax.textCompletion(
+      const response = await gemini.textCompletion(
         [
           {
             role: "system",
@@ -336,10 +336,10 @@ Return JSON array:
       (r) => r.priority === "critical"
     ).length;
 
-    if (isMiniMaxConfigured()) {
+    if (isGeminiConfigured()) {
       try {
-        const minimax = getMiniMaxClient();
-        const response = await minimax.textCompletion(
+        const gemini = getGeminiClient();
+        const response = await gemini.textCompletion(
           [
             {
               role: "user",

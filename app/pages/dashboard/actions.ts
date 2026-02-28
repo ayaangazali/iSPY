@@ -1,9 +1,9 @@
 "use server";
 
 import {
-  getMiniMaxClient,
-  isMiniMaxConfigured,
-} from "@/lib/minimax/client";
+  getGeminiClient,
+  isGeminiConfigured,
+} from "@/lib/gemini/client";
 
 export interface VideoEvent {
   timestamp: string;
@@ -21,13 +21,13 @@ export async function detectEvents(
       throw new Error("No image data provided");
     }
 
-    if (!isMiniMaxConfigured()) {
-      throw new Error("MINIMAX_API_KEY environment variable is not set");
+    if (!isGeminiConfigured()) {
+      throw new Error("GEMINI_API_KEY environment variable is not set");
     }
 
-    const minimax = getMiniMaxClient();
+    const gemini = getGeminiClient();
 
-    console.log("Sending image to MiniMax API...");
+    console.log("Sending image to Gemini API...");
 
     let promptText =
       "You are an advanced retail theft detection AI. Analyze this frame and report EVERYTHING you see happening.\n\n";
@@ -104,7 +104,7 @@ export async function detectEvents(
       "You are an aggressive retail theft detection AI. You MUST respond ONLY with valid JSON. Your job is to detect and report ALL suspicious behavior involving products. Be VERY sensitive to theft - flag any interaction with items. Always name specific products when visible. Never return empty events if a person is visible.";
 
     try {
-      const text = await minimax.analyzeImage(
+      const text = await gemini.analyzeImage(
         base64Image,
         promptText,
         systemPrompt,

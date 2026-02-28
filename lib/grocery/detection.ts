@@ -2,16 +2,16 @@
  * Grocery Store Theft Detection - Detection Service
  *
  * Server actions and client utilities for theft detection.
- * Uses MiniMax M2.1 (abab7-chat-preview) for vision analysis.
+ * Uses Gemini for vision analysis.
  */
 
 "use server";
 
 import {
-  getMiniMaxClient,
-  isMiniMaxConfigured,
-  MINIMAX_MODELS,
-} from "@/lib/minimax/client";
+  getGeminiClient,
+  isGeminiConfigured,
+  GEMINI_MODELS,
+} from "@/lib/gemini/client";
 import type {
   TheftEvent,
   TheftBehaviorType,
@@ -87,11 +87,11 @@ export async function detectGroceryTheft(
     previousContext,
   } = options;
 
-  if (!isMiniMaxConfigured()) {
-    throw new Error("MINIMAX_API_KEY environment variable is not set");
+  if (!isGeminiConfigured()) {
+    throw new Error("GEMINI_API_KEY environment variable is not set");
   }
 
-  const minimax = getMiniMaxClient();
+  const gemini = getGeminiClient();
 
   // Optional pre-filter
   if (usePreFilter) {
@@ -101,14 +101,14 @@ export async function detectGroceryTheft(
         events: [],
         personTracks: [],
         analysisTimeMs: Date.now() - startTime,
-        modelUsed: `${MINIMAX_MODELS.TEXT_LITE} (pre-filter)`,
+        modelUsed: `${GEMINI_MODELS.TEXT} (pre-filter)`,
         frameAnalyzed: false,
       };
     }
   }
 
   // Full VLM analysis
-  console.log("[Grocery Detection] Starting MiniMax M2.1 analysis...");
+  console.log("[Grocery Detection] Starting Gemini analysis...");
   const vlmResult = await runFullAnalysis(imageBase64, zones, previousContext);
 
   if (!vlmResult) {
@@ -116,13 +116,13 @@ export async function detectGroceryTheft(
       events: [],
       personTracks: [],
       analysisTimeMs: Date.now() - startTime,
-      modelUsed: MINIMAX_MODELS.VISION_REASONING,
+      modelUsed: GEMINI_MODELS.VISION_REASONING,
       frameAnalyzed: true,
     };
   }
 
   console.log(
-    "[Grocery Detection] MiniMax returned",
+    "[Grocery Detection] Gemini returned",
     vlmResult.events.length,
     "events"
   );
@@ -174,15 +174,15 @@ export async function detectGroceryTheft(
     events: significantEvents,
     personTracks: [],
     analysisTimeMs: Date.now() - startTime,
-    modelUsed: MINIMAX_MODELS.VISION_REASONING,
+    modelUsed: GEMINI_MODELS.VISION_REASONING,
     frameAnalyzed: true,
   };
 }
 
 async function runPreFilter(imageBase64: string): Promise<boolean> {
   try {
-    const minimax = getMiniMaxClient();
-    return await minimax.prefilterImage(imageBase64, PREFILTER_PROMPT);
+    const gemini = getGeminiClient();
+    return await gemini.prefilterImage(imageBase64, PREFILTER_PROMPT);
   } catch (error) {
     console.error("[Grocery Detection] Pre-filter error:", error);
     return true;
@@ -197,8 +197,8 @@ async function runFullAnalysis(
   const prompt = generateRetailTheftPrompt(zones, previousContext);
 
   try {
-    const minimax = getMiniMaxClient();
-    const text = await minimax.analyzeImage(
+    const gemini = getGeminiClient();
+    const text = await gemini.analyzeImage(
       imageBase64,
       prompt,
       RETAIL_THEFT_SYSTEM_PROMPT,

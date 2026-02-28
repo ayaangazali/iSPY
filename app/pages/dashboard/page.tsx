@@ -210,22 +210,10 @@ export default function Page() {
     let id = `inc-${Date.now()}`
     let url: string
 
-    try {
-      const form = new FormData()
-      form.append("file", blob)
-      form.append("name", name)
-      form.append("timestamps", JSON.stringify(timestamps))
-      const res = await fetch("/api/saved-videos", { method: "POST", body: form })
-      if (res.ok) {
-        const data = await res.json()
-        id = data.id
-        url = data.url ?? `/api/saved-videos/stream/${data.id}`
-      } else {
-        url = URL.createObjectURL(blob)
-      }
-    } catch {
-      url = URL.createObjectURL(blob)
-    }
+    // Minimal change: do NOT upload to the server. Always use a local object URL
+    // so generated clips are not persisted remotely. This preserves existing
+    // localStorage behavior while avoiding any server saves.
+    url = URL.createObjectURL(blob)
 
     try {
       const existing: { id: string; name: string; url: string; thumbnailUrl: string; timestamps: { timestamp: string; description: string }[] }[] =

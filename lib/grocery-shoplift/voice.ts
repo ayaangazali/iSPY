@@ -1,8 +1,5 @@
 /**
- * Voice Alert — Local (default) + optional MiniMax TTS
- *
- * LocalVoiceAlert: beep or OS TTS (say / espeak). No API key.
- * MiniMaxVoiceAlert: only if ENABLE_MINIMAX_TTS=1 and MINIMAX_API_KEY set.
+ * Voice Alert — Local only (beep or OS TTS). No API key required.
  */
 
 import { spawn } from "child_process";
@@ -19,7 +16,7 @@ function getAlertText(location: string): string {
 export interface VoiceAlertResult {
   success: boolean;
   audioPath?: string;
-  voiceUsed: "local" | "minimax";
+  voiceUsed: "local" | "gemini";
   error?: string;
 }
 
@@ -121,38 +118,6 @@ export class LocalVoiceAlert implements IVoiceAlert {
   }
 }
 
-/**
- * MiniMax TTS — only used when ENABLE_MINIMAX_TTS=1 and MINIMAX_API_KEY set.
- * Reuse lib/shoplift-alerts/minimax-tts; on failure use LocalVoiceAlert.
- */
-export async function createMiniMaxVoiceAlert(): Promise<IVoiceAlert | null> {
-  const key = process.env.MINIMAX_API_KEY;
-  const enabled = process.env.ENABLE_MINIMAX_TTS === "1" || process.env.ENABLE_MINIMAX_TTS === "true";
-  if (!key || !enabled) return null;
-
-  return {
-    async play(location: string, cameraId: string): Promise<VoiceAlertResult> {
-      try {
-        const { generateAlertAudio } = await import("@/lib/shoplift-alerts/minimax-tts");
-        const result = await generateAlertAudio(location, cameraId);
-        if (result.audioPath) {
-          const { playAudioNonBlocking } = await import("@/lib/shoplift-alerts/playback");
-          playAudioNonBlocking(result.audioPath);
-          return {
-            success: true,
-            audioPath: result.audioPath,
-            voiceUsed: result.fallbackUsed ? "local" : "minimax",
-            error: result.error,
-          };
-        }
-      } catch (_e) {
-        // fall through to local
-      }
-      return new LocalVoiceAlert().play(location, cameraId);
-    },
-  };
-}
-
 let defaultVoice: IVoiceAlert = new LocalVoiceAlert();
 
 export function getVoiceAlert(): IVoiceAlert {
@@ -160,7 +125,6 @@ export function getVoiceAlert(): IVoiceAlert {
 }
 
 export async function initVoiceAlert(): Promise<IVoiceAlert> {
-  const minimax = await createMiniMaxVoiceAlert();
-  defaultVoice = minimax ?? new LocalVoiceAlert();
+  defaultVoice = new LocalVoiceAlert();
   return defaultVoice;
 }
